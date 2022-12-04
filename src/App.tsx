@@ -1,26 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { authorize } from './core';
+import { useAppDispatch, useAppSelector, useTelegram } from './hooks';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+  const dispatch = useAppDispatch();
+  const { user, tg } = useTelegram();
+
+  const { isLoading, userContext, error } = useAppSelector((state) => state.authReducer);
+
+  useEffect(() => {
+    tg.ready();
+    
+    console.log(user);
+    dispatch(authorize(Number(process.env.REACT_APP_TEST_ID)));
+  }, [tg, user, user?.id, dispatch]);
+
+  return <div style={{ display: 'flex', justifyContent: 'center' }}>{isLoading ? <div>Подождите</div> : <div>{userContext ? JSON.stringify(userContext) : null}</div>}{error}</div>
 }
 
 export default App;
